@@ -6,9 +6,13 @@ using System.Collections.Generic;
 
 namespace solvedQuestionsTracker
 {
-    public class Chapter : IEnumerable<QuestionNumber>
+    public class Chapter : IChapter
     {
-        public IEnumerable<QuestionNumber> Questions { get; private set; }
+        private QuestionNumber[] _questions;
+
+        public int ChapterNumber => _questions[0].Chapter; // chapter has at least one question
+
+        public QuestionNumber[] Questions { get => _questions; set { _questions = value;}} 
 
         public Chapter(int chapterNumber, int numQuestions)
         {
@@ -17,41 +21,26 @@ namespace solvedQuestionsTracker
                 throw new IndexOutOfRangeException("chapter number should be a number larger than 0");
             }
 
-            var questions = new QuestionNumber[numQuestions];
-            for(var i = 0; i < questions.Length; i++)
+            if (numQuestions < 1)
             {
-                questions[i] = new QuestionNumber(chapterNumber, i+1);
+                throw new IndexOutOfRangeException("chapter should have at least 1 question");                
             }
 
-            Questions = questions;
+            _questions = new QuestionNumber[numQuestions];
+            for(var i = 0; i < _questions.Length; i++)
+            {
+                _questions[i] = new QuestionNumber(chapterNumber, i+1);
+            }
+        }
+
+        public void SolveQuestion(QuestionNumber qestionNumber)
+        {
+            _questions[qestionNumber.Question - 1].Solved = true;
         }
 
         public int Count<QuestionNumber>()
         {
-            ICollection<QuestionNumber> is2 = this as ICollection<QuestionNumber>;
-            if (is2 != null)
-            {
-                return is2.Count;
-            }
-            int num = 0;
-            using (IEnumerator<object> enumerator = this.GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
-                    num++;
-                }
-            }
-            return num;
-        }
-
-        public IEnumerator<QuestionNumber> GetEnumerator()
-        {
-            return Questions.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Questions.GetEnumerator();
+            return _questions.Length;
         }
     }
 }
