@@ -12,16 +12,22 @@ namespace solvedQuestionsTracker
         public Trainer(IBook book)
         {
             _book = book;
-            _rand = new Random(837);
+            _rand = new Random(7);
         }
 
-        public Trainer(string filename)
+        public IEnumerable<QuestionNumber> MakeExamExcludingLastChapters(int countLastChaptersToExclude)
         {
-            _book = new BookFactory().CrackingTheCodingInterview(filename);
-            _rand = new Random(837);
+            var excludedChapters = new List<int>();
+            var numExcludedQuestions = 0;
+            for (int i = 0; i < countLastChaptersToExclude; i++)
+            {
+                excludedChapters.Add(_book.NumChapters - i);
+                numExcludedQuestions += _book.Chapters[_book.NumChapters - i - 1].Questions.Length;
+            }
+            return MakeExam(189 - numExcludedQuestions - _book.NumSolved, excludedChapters);
         }
 
-        public IEnumerable<QuestionNumber> MakeExam(int numQuestions, List<int> chaptersExcluded)
+        private IEnumerable<QuestionNumber> MakeExam(int numQuestions, List<int> chaptersExcluded)
         {
             if (chaptersExcluded == null || !chaptersExcluded.Any())
             {
@@ -40,11 +46,12 @@ namespace solvedQuestionsTracker
             return new Trainer(tempBook).MakeExam(numQuestions);
         }
 
-        public IEnumerable<QuestionNumber> MakeExam(int numQuestions)
+        private IEnumerable<QuestionNumber> MakeExam(int numQuestions)
         {
-            if (numQuestions > _book.NumQuestions)
+            if (numQuestions > _book.NumQuestions - _book.NumSolved)
             {
-                throw new InvalidOperationException("number of requested questions in an exam should be less that number of questions that exist in the book.");
+                throw new InvalidOperationException(
+                    $"cannot allow requesting {numQuestions} while book has {_book.NumSolved} questions solved and {_book.NumQuestions} available to choose from.");
             }
 
             var questions = new HashSet<QuestionNumber>();

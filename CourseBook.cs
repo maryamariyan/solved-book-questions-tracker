@@ -25,7 +25,7 @@ namespace solvedQuestionsTracker
         public int NumSolved =>
             Chapters.Sum((chapter) => chapter == null ? 0 : chapter.Questions.Sum(q => q.Solved ? 1 : 0));
             
-        public IEnumerable<Chapter> Chapters => _chapters;
+        public Chapter[] Chapters => _chapters;
 
         public string Name => _name;
 

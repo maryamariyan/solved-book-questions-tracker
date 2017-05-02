@@ -8,7 +8,7 @@ namespace solvedQuestionsTracker
         int NumChapters { get; }
         int NumQuestions { get; }
         int NumSolved {get;}
-        IEnumerable<Chapter> Chapters { get; }
+        Chapter[] Chapters { get; }
         void AddChapter(int chapterNumber, int numQuestions);
         void AddChapter(Chapter chapter);
         void SolveQuestion(QuestionNumber questionNumber);
